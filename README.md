@@ -1,3 +1,7 @@
+# Supabase React Tutorial - Todo App with Supabase and ReactJS (with realtime)
+
+Video Tutorial: https://youtu.be/1iRrc6BFRE0
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
