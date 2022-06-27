@@ -1,85 +1,32 @@
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    Button,
-    Text,
-    useDisclosure,
-    IconButton
-  } from '@chakra-ui/react'
-  import { useState } from 'react';
-  import React from 'react';
-  import { FiTrash2 } from 'react-icons/fi'
+import { IconButton, useToast } from '@chakra-ui/react';
+import { useState } from 'react';
+import { FiTrash2 } from 'react-icons/fi';
+import supabase from '../supabase';
 
-  
+export default function DeleteTask({ id }) {
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
-  function DeleteAllTask({ deleteTaskAll }) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    return (
-        <>
-            <Button
-                colorScheme='gray'
-                px='8'
-                h='45'
-                color='gray.500'
-                mt='8'
-                onClick={onOpen}
-                >
-                Excluir Todos
-            </Button>
+  async function handleDelete() {
+    setLoading(true);
+    const { data, error } = await supabase.from('todos').delete().eq('id', id);
+    setLoading(false);
 
-            <Modal isCentered isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent w='90%'>
-                <ModalHeader>
-                    Você realmente deseja excluir todas as tarefas?
-                </ModalHeader>
-                <ModalFooter>
-                <Button mr={3} onClick={onClose}>Não</Button>
-                <Button colorScheme='blue' onClick={() => deleteTaskAll()}>
-                    Sim
-                </Button>
-                </ModalFooter>
-            </ModalContent>
-            </Modal>
-        </>
-    )
+    toast({
+      title: error || 'Task deleted!',
+      position: 'top',
+      status: error ? 'error' : 'success',
+      duration: 2000,
+      isClosable: true,
+    });
   }
 
-  function DeleteTask({ task, deleteTask}) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-  
-    return (
-      <>
-        <IconButton
-            icon={<FiTrash2 />}
-            isRound='true'
-            onClick={onOpen}
-        />
-
-        <Modal isCentered isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent w='90%'>
-            <ModalHeader>
-                Você realmente deseja excluir a tarefa?
-            </ModalHeader>
-            <ModalBody>
-                <Text>{task.body}</Text>
-            </ModalBody>
-            <ModalFooter>
-              <Button mr={3} onClick={onClose}>Não</Button>
-              <Button colorScheme='blue' onClick={() => deleteTask(task.id, onClose)}>
-                Sim
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-    )
-  }
-
-export { DeleteTask, DeleteAllTask }
+  return (
+    <IconButton
+      isRound="true"
+      icon={<FiTrash2 />}
+      onClick={handleDelete}
+      isLoading={loading}
+    />
+  );
+}

@@ -1,65 +1,51 @@
-import { useState } from 'react'
-import { Button, HStack, Input, useToast } from "@chakra-ui/react";
-import { nanoid } from 'nanoid';
+import { Button, HStack, Input, useToast } from '@chakra-ui/react';
+import { useState } from 'react';
+import supabase from '../supabase';
 
-function AddTask({ addTask }) {
-    const toast = useToast();
-    const [content, setContent] = useState('');
-    const [statusInput, setStatusInput] = useState(true);
+export default function AddTask() {
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
-    function handleSubmit(e){
-        e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-        const taskText = content.trim();
+    setLoading(true);
+    const { data, error } = await supabase.from('todos').insert([{ text }]);
+    setLoading(false);
+    setText('');
 
-        if (!taskText) {
-            toast({
-                title: 'Digite sua tarefa',
-                position: 'top',
-                status: 'warning',
-                duration: 2000,
-                isClosable: true,
-            });
-            setStatusInput(false);
-            
-            return setContent('');
-        }
+    toast({
+      title: error || 'Task added!',
+      position: 'top',
+      status: error ? 'error' : 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  }
 
-        const task = {
-            id: nanoid(),
-            body: taskText,
-            check: false
-        };
-        
-        addTask(task);
-        setContent('');
-    }
-
-    if (content && !statusInput) {
-        setStatusInput(true);
-    }
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <HStack mt='4' mb='4'>
-                <Input
-                    h='46'
-                    borderColor={!statusInput ? 'red.300' : 'transparent'}
-                    variant='filled'
-                    placeholder='Digite sua tarefa'
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                />
-                <Button
-                colorScheme='blue'
-                px='8'
-                pl='10'
-                pr='10'
-                h='46' 
-                type='submit'>Adicionar</Button>
-            </HStack>
-        </form>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <HStack my="4" h="45">
+        <Input
+          h="100%"
+          variant="filled"
+          placeholder="Do the laundry"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          disabled={loading}
+        />
+        <Button
+          colorScheme="blue"
+          px="10"
+          h="100%"
+          type="submit"
+          isLoading={loading}
+          loadingText="Adding"
+        >
+          Add
+        </Button>
+      </HStack>
+    </form>
+  );
 }
-
-export default AddTask;

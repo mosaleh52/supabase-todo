@@ -1,23 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { ChakraProvider } from '@chakra-ui/react';
+import React, { StrictMode } from 'react';
+import * as ReactDOM from 'react-dom/client';
+import { Provider as SupabaseProvider } from 'react-supabase';
 import App from './App';
-import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
+import supabase from './supabase';
 
-const config = {
-    initialColorMode: 'dark',
-    useSystemColorMode: false,
-  };
-  
-  const theme = extendTheme({
-    config,
-  });
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ChakraProvider theme={theme}>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+root.render(
+  <StrictMode>
+    <SupabaseProvider value={supabase}>
+      <ChakraProvider>
         <App />
-    </ChakraProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+      </ChakraProvider>
+    </SupabaseProvider>
+  </StrictMode>
 );
