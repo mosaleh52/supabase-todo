@@ -25,6 +25,7 @@ export default function TaskList() {
       />
     );
   }
+  console.log(tasks);
 
   if (!tasks || !tasks.length) {
     return (

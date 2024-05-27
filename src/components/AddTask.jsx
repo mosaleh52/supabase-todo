@@ -12,6 +12,7 @@ export default function AddTask() {
 
     setLoading(true);
     const { data, error } = await supabase.from('todos').insert([{ text }]);
+    console.log(data, error);
     setLoading(false);
     setText('');
 
